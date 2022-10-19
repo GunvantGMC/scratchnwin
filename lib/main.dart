@@ -1,5 +1,10 @@
 // ignore_for_file: prefer_const_constructors
+
+import 'dart:math';
+
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:scratchnwin/CardModel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +36,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  double turns = 0.0;
+  List<CardModel> cardKeyArr = [];
+
+  void changeRotation() {
+    setState(() => turns += 1.0 / 4.0);
+  }
+
+  @override
+  void initState() {
+    resetDetails();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,21 +69,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSpacing: 2.0,
                   crossAxisSpacing: 2.0,
                 ),
-                itemBuilder: (c, i) => Container(
-                  child: Material(
-                    color: Colors.blue,
-                    child: InkWell(
-                      onTap: () {},
-                      child: const Icon(Icons.question_mark),
-                    ),
-                  ),
+                itemBuilder: (c, i) => FlipCard(
+                  key: cardKeyArr[i].cardKey,
+                  flipOnTouch: true,
+                  front: showContainer(
+                      isFront: true, isGift: cardKeyArr[i].isGift),
+                  back: showContainer(
+                      isFront: false, isGift: cardKeyArr[i].isGift),
                 ),
                 itemCount: 25,
               ),
             ),
             SizedBox(height: 50.0),
             FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () => resetDetails(),
               label: Text("Refresh"),
               icon: Icon(Icons.refresh),
             ),
@@ -83,5 +101,22 @@ class _MyHomePageState extends State<MyHomePage> {
               ? Icon(Icons.celebration)
               : Icon(Icons.warning),
     );
+  }
+
+  int getRandomNum() {
+    int randomNumber = Random().nextInt(25) + 1;
+    print(randomNumber);
+    return randomNumber;
+  }
+
+  void resetDetails() {
+    int rndNum = getRandomNum();
+    cardKeyArr = List.generate(25, (index) {
+      GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+
+      return CardModel(cardKey: cardKey, isGift: index == rndNum);
+    });
+    changeRotation();
+    setState(() {});
   }
 }
