@@ -1,4 +1,6 @@
 // ignore_for_file: prefer_const_constructors
+
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -31,6 +33,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  double turns = 0.0;
+  GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+
+  void changeRotation() {
+    setState(() => turns += 1.0 / 4.0);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,13 +64,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSpacing: 2.0,
                   crossAxisSpacing: 2.0,
                 ),
-                itemBuilder: (c, i) => Container(
-                  child: Material(
+                itemBuilder: (c, i) => FlipCard(
+                  key: GlobalKey<FlipCardState>(),
+                  flipOnTouch: true,
+                  front: Container(
                     color: Colors.blue,
-                    child: InkWell(
-                      onTap: () {},
-                      child: const Icon(Icons.question_mark),
-                    ),
+                    child: Icon(Icons.question_mark),
+                  ),
+                  back: Container(
+                    color: Colors.blue,
+                    child: Icon(Icons.question_mark),
                   ),
                 ),
                 itemCount: 25,
@@ -71,17 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-    );
-  }
-
-  showContainer({required bool isFront, required isGift}) {
-    return Material(
-      color: Colors.blue,
-      child: isFront
-          ? Icon(Icons.question_mark)
-          : isGift
-              ? Icon(Icons.celebration)
-              : Icon(Icons.warning),
     );
   }
 }
