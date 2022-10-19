@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:math';
+
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:scratchnwin/CardModel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   double turns = 0.0;
-  GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+  List<CardModel> cardKeyArr = [];
 
   void changeRotation() {
     setState(() => turns += 1.0 / 4.0);
@@ -42,6 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    resetDetails();
+
     super.initState();
   }
 
@@ -65,23 +70,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisSpacing: 2.0,
                 ),
                 itemBuilder: (c, i) => FlipCard(
-                  key: GlobalKey<FlipCardState>(),
+                  key: cardKeyArr[i].cardKey,
                   flipOnTouch: true,
-                  front: Container(
-                    color: Colors.blue,
-                    child: Icon(Icons.question_mark),
-                  ),
-                  back: Container(
-                    color: Colors.blue,
-                    child: Icon(Icons.question_mark),
-                  ),
+                  front: showContainer(
+                      isFront: true, isGift: cardKeyArr[i].isGift),
+                  back: showContainer(
+                      isFront: false, isGift: cardKeyArr[i].isGift),
                 ),
                 itemCount: 25,
               ),
             ),
             SizedBox(height: 50.0),
             FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () => resetDetails(),
               label: Text("Refresh"),
               icon: Icon(Icons.refresh),
             ),
@@ -89,5 +90,33 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  showContainer({required bool isFront, required isGift}) {
+    return Material(
+      color: Colors.blue,
+      child: isFront
+          ? Icon(Icons.question_mark)
+          : isGift
+              ? Icon(Icons.celebration)
+              : Icon(Icons.warning),
+    );
+  }
+
+  int getRandomNum() {
+    int randomNumber = Random().nextInt(25) + 1;
+    print(randomNumber);
+    return randomNumber;
+  }
+
+  void resetDetails() {
+    int rndNum = getRandomNum();
+    cardKeyArr = List.generate(25, (index) {
+      GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+
+      return CardModel(cardKey: cardKey, isGift: index == rndNum);
+    });
+    changeRotation();
+    setState(() {});
   }
 }
