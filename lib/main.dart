@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:scratchnwin/CardModel.dart';
 
 void main() {
@@ -72,6 +73,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (c, i) => FlipCard(
                   key: cardKeyArr[i].cardKey,
                   flipOnTouch: true,
+                  onFlip: () async {
+                    if (cardKeyArr[i].isGift) {
+                      showToast(msg: "You Won The Game");
+                      await Future.delayed(Duration(seconds: 1));
+                      resetDetails();
+                    }
+                  },
                   front: showContainer(
                       isFront: true, isGift: cardKeyArr[i].isGift),
                   back: showContainer(
@@ -118,5 +126,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     changeRotation();
     setState(() {});
+  }
+
+  showToast({required msg}) {
+    Fluttertoast.showToast(
+        msg: "$msg",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }
